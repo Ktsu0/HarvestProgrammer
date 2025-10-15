@@ -1,0 +1,199 @@
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #202020; /* Dark theme background */
+  color: #e0e0e0; /* Light text color for all main content */
+}
+.font-mono {
+  font-family: "Roboto Mono", monospace;
+}
+.card {
+  /* Using a slightly lighter dark background for elements to pop */
+  @apply bg-[#2c2c2c] rounded-lg shadow-xl p-4 transition-colors duration-300;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  padding: 2% 0 5% 2%;
+}
+.btn {
+  @apply px-4 py-2 rounded-md font-semibold text-white transition-all duration-200 shadow-lg transform hover:scale-[1.02] active:scale-[0.98];
+}
+.btn-primary {
+  @apply bg-indigo-600 hover:bg-indigo-500;
+  background-color: #8a3d07;
+  padding: 2%;
+}
+.btn-secondary {
+  @apply bg-gray-600 hover:bg-gray-500;
+}
+.btn-tech {
+  /* Neon Green look - Text is now white for contrast */
+  @apply text-sm py-1 px-3 text-white font-bold border-2 border-teal-300;
+  background-color: #8a3d07;
+  padding: 2%;
+}
+
+.btn-primary:hover,
+.btn-tech:hover {
+  background-color: #613313;
+}
+.centerText {
+  text-align: center;
+}
+
+/* Farm Grid Styles */
+.farm-grid-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  /* Enforce square aspect ratio for the container */
+  padding-top: 100%;
+  height: 0;
+  max-width: 600px;
+}
+.farm-grid {
+  display: grid;
+  gap: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #1a1a1a;
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.1);
+  transition: all 0.5s ease-in-out;
+}
+
+/* TILE VISUALS (Terra Realista) */
+.tile {
+  /* Base Soil Color: Dark, dry earth */
+  background-color: #5d4037; /* Warm dark brown */
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  /* Subtle texture for empty soil */
+  background-image: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.05) 25%,
+    transparent 25%,
+    transparent 75%,
+    rgba(0, 0, 0, 0.05) 75%,
+    rgba(0, 0, 0, 0.05)
+  );
+  background-size: 8px 8px;
+  transition: background-color 0.8s, transform 0.1s, box-shadow 0.5s,
+    filter 0.5s; /* Smooth transitions */
+}
+
+.tile.tilled {
+  /* Tilled Earth: Lighter, richer brown, soil texture gone */
+  background-color: #8b4513;
+  background-image: none;
+  border-color: #d3b482; /* Lighter border color for "fresh" look */
+}
+
+.tile.watered {
+  /* Wet effect: Darken and add blue reflection/shadow */
+  box-shadow: inset 0 0 10px rgba(0, 100, 255, 0.7);
+  filter: brightness(0.8);
+}
+
+.tile.planted {
+  /* Subtle growth animation */
+  animation: pulse-plant 2s infinite alternate;
+}
+.tile.grown {
+  /* Grown effect: Stable and ready to harvest */
+  filter: brightness(1.2);
+  transform: scale(1.05);
+  animation: none;
+}
+@keyframes pulse-plant {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+}
+
+/* Drone Visuals */
+#drone-el {
+  position: absolute;
+  background-color: transparent;
+  border: none;
+  transition: transform 0.25s ease-in-out;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  top: 10%;
+  left: 10%;
+}
+#drone-el::after {
+  content: "🚁";
+  color: #fcd34d; /* Yellow/Gold for visibility */
+  font-size: 3.5rem;
+  font-weight: bold;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+/* Console and Code Editor */
+#console-output {
+  height: 150px;
+  overflow-y: auto;
+  background-color: #1e1e1e;
+  color: #a7f3d0;
+  padding: 8px;
+  border-radius: 4px;
+}
+#code-editor {
+  background-color: #1e1e1e;
+  padding: 10px;
+  color: #e0e0e0;
+  border: none;
+  outline: none;
+  resize: none;
+  border-radius: 10px;
+}
+
+/* Modal & Tabs */
+.modal {
+  @apply fixed inset-0 bg-black/70 flex items-center justify-center z-50 transition-opacity duration-300;
+}
+.modal-content {
+  /* Shared modal background */
+  @apply bg-[#2c2c2c] text-white rounded-xl shadow-2xl;
+  width: 90%;
+  max-height: 90%;
+  overflow: auto;
+}
+.tab-button {
+  /* Faded appearance for inactive tabs, more padding, rounded top corners */
+  @apply px-5 py-3 text-sm font-bold rounded-t-lg border-b-4 border-transparent 
+                   bg-[#1e1e1e] text-white/60 hover:text-white hover:bg-[#383838] 
+                   transition-all duration-150;
+}
+.tab-button.active {
+  /* Active tab matches the modal content background to create connection */
+  @apply bg-[#2c2c2c] border-amber-600 text-amber-300 shadow-inner border-b-4;
+}
+/* Function Help List Item */
+.func-item {
+  @apply p-3 border-b border-gray-600 cursor-pointer transition-colors duration-150 font-mono text-sm;
+}
+.func-item:hover {
+  @apply bg-[#3d3d3d];
+}
+.func-item.active {
+  @apply bg-indigo-700 text-white font-bold;
+}

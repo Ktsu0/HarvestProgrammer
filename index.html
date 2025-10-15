@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A Colheita do Programador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="./index.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght=400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="">
+    <div id="game-container" class="p-4 max-w-screen-xl mx-auto">
+      <header class="text-center mb-4">
+        <h1 class="text-4xl font-bold text-indigo-400">
+          A Colheita do Programador
+        </h1>
+        <p class="text-slate-200">
+          Automatize sua fazenda com código! | Tamanho Atual:
+          <span id="current-grid-size">1x1</span>
+        </p>
+      </header>
+
+      <main class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <!-- Left Panel: Code Editor & Controls -->
+        <div class="lg:col-span-1 flex flex-col gap-4">
+          <div class="card flex-grow flex flex-col">
+            <h2 class="centerText text-xl font-bold mb-2 text-indigo-400">
+              Editor de Código
+            </h2>
+            <div class="flex-grow bg-slate-1000 rounded-md p-2">
+              <textarea
+                id="code-editor"
+                class="font-mono w-full h-full text-sm"
+                spellcheck="false"
+              >
+O seu código é o seu fazendeiro!
+
+Comece focando no bloco 1x1 para acumular Trigos.
+
+ATENÇÃO: Condicionais, Funções e Laços estão BLOQUEADOS.
+Compre upgrades na Árvore Tecnológica para usá-los.
+              </textarea>
+            </div>
+            <div class="mt-4 flex gap-2">
+              <button id="run-btn" class="btn btn-primary flex-grow">
+                Executar Código
+              </button>
+              <button id="tech-btn" class="btn btn-tech">
+                Árvore Tecnológica
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center Panel: Farm Grid & Drone -->
+        <div
+          class="lg:col-span-2 card flex items-center justify-center farm-grid-container"
+        >
+          <div id="farm-grid" class="farm-grid"></div>
+          <div id="drone-el"></div>
+        </div>
+
+        <!-- Right Panel: Info & Status -->
+        <div class="lg:col-span-1 flex flex-col gap-4">
+          <div class="card">
+            <h2 class="centerText text-xl font-bold mb-2 text-indigo-400">
+              Status do Drone
+            </h2>
+            <div id="drone-status">
+              <p>
+                <strong>Posição:</strong>
+                <span id="drone-pos" class="font-mono text-teal-400"
+                  >(0, 0)</span
+                >
+              </p>
+              <p>
+                <strong>Capacidade:</strong>
+                <span id="inventory-count" class="text-yellow-400">0</span> /
+                <span id="inventory-cap">10</span>
+              </p>
+              <div
+                id="inventory-list"
+                class="text-sm mt-1 text-yellow-200"
+              ></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2 class="centerText text-xl font-bold mb-2 text-indigo-400">
+              Recursos da Fazenda
+            </h2>
+            <div
+              id="farm-resources"
+              class="grid grid-cols-2 gap-1 text-sm text-slate-200"
+            >
+              <!-- Water Status -->
+              <p class="col-span-2 border-b border-slate-600 mb-1 pb-1">
+                💧 Água:
+                <span id="resource-WATER" class="text-blue-400 font-bold"
+                  >0</span
+                >
+                / <span id="water-capacity" class="text-blue-400">5</span>
+              </p>
+              <!-- Crops -->
+              <p>🌾 Trigo: <span id="resource-WHEAT">0</span></p>
+              <p>🥕 Cenoura: <span id="resource-CARROT">0</span></p>
+              <p>🌶️ Pimentão: <span id="resource-BELL_PEPPER">0</span></p>
+              <p>🌽 Milho: <span id="resource-CORN">0</span></p>
+              <p>🍅 Tomate: <span id="resource-TOMATO">0</span></p>
+              <div
+                class="col-span-2 text-xs pt-2 border-t border-slate-600 mt-2"
+              >
+                <p class="font-bold text-sm text-yellow-500">🌱 Sementes:</p>
+                <p class="pl-2">
+                  🌱 S. Trigo: <span id="resource-WHEAT_SEED">0</span>
+                </p>
+                <p class="pl-2">
+                  🌰 S. Cenoura: <span id="resource-CARROT_SEED">0</span>
+                </p>
+                <p class="pl-2">
+                  🌿 S. Pimentão: <span id="resource-BELL_PEPPER_SEED">0</span>
+                </p>
+                <p class="pl-2">
+                  🟡 S. Milho: <span id="resource-CORN_SEED">0</span>
+                </p>
+                <p class="pl-2">
+                  🔴 S. Tomate: <span id="resource-TOMATO_SEED">0</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- API Help Button -->
+          <div class="card">
+            <h2 class="centerText text-xl font-bold mb-2 text-indigo-400">
+              API de Funções
+            </h2>
+            <button id="help-btn" class="btn btn-secondary w-full mt-2">
+              Funções Help
+            </button>
+          </div>
+
+          <div class="card flex-grow flex flex-col">
+            <h2 class="centerText text-xl font-bold mb-2 text-indigo-400">
+              Console
+            </h2>
+            <div id="console-output" class="font-mono text-xs flex-grow">
+              <p class="text-teal-400">> Pronto para executar o código.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Bottom Panel: Chart -->
+        <div class="lg:col-span-4 card">
+          <h2 class="text-xl font-bold mb-2 text-indigo-400">
+            Produção de Colheitas (Trigo)
+          </h2>
+          <div
+            class="chart-container"
+            style="position: relative; height: 25vh; width: 100%"
+          >
+            <canvas id="productionChart"></canvas>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Tech Tree Modal -->
+    <div id="tech-modal" class="modal hidden opacity-0">
+      <div class="modal-content max-w-5xl w-full p-6">
+        <h2 class="text-2xl font-bold mb-4 text-indigo-400">
+          Árvore Tecnológica
+        </h2>
+
+        <!-- Tabs Navigation -->
+        <div
+          class="flex space-x-4 mb-0 border-b border-gray-700 overflow-x-auto"
+        >
+          <button data-tab="land" class="tab-button active">Terreno</button>
+          <button data-tab="capacity" class="tab-button">
+            Capacidade do Drone
+          </button>
+          <button data-tab="harvest" class="tab-button">
+            Multiplicadores de Colheita
+          </button>
+          <button data-tab="seeds" class="tab-button">Sementes</button>
+          <button data-tab="water" class="tab-button">
+            Recipiente de Água
+          </button>
+          <button data-tab="code" class="tab-button">
+            Funcionalidades de Código
+          </button>
+          <button data-tab="inventory" class="tab-button">
+            Inventário (Gerenciar Itens)
+          </button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="upgrades-list" class="space-y-4 pt-4">
+          <!-- Upgrades/Inventory will be rendered here based on the active tab -->
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button id="close-modal-btn" class="btn btn-secondary">Fechar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal hidden opacity-0">
+      <div class="modal-content max-w-4xl w-full p-6">
+        <h2 class="text-2xl font-bold mb-4 text-indigo-400">
+          Guia de Funções (API)
+        </h2>
+
+        <!-- Two-Column Layout for Help -->
+        <div
+          class="flex h-[50vh] min-h-[400px] border border-gray-700 rounded-lg overflow-hidden"
+        >
+          <!-- Left Panel: Function List -->
+          <div
+            id="function-list"
+            class="w-1/3 bg-[#333333] overflow-y-auto border-r border-gray-700"
+          >
+            <!-- Functions will be rendered here -->
+          </div>
+
+          <!-- Right Panel: Details -->
+          <div
+            id="function-details"
+            class="w-2/3 p-6 overflow-y-auto flex flex-col justify-center text-left"
+          >
+            <p class="text-lg text-slate-400 text-center">
+              Selecione uma função na lista ao lado para ver os detalhes e
+              exemplos de uso.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button id="close-help-modal-btn" class="btn btn-secondary">
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const TILE_UPDATE_SPEED = 300; // ms
+        const AUTO_RUN_DELAY = 2000; // 2 seconds delay for auto-run
+
+        // DOM Elements
+        const farmGridEl = document.getElementById("farm-grid");
+        const droneEl = document.getElementById("drone-el");
+        const dronePosEl = document.getElementById("drone-pos");
+        const inventoryCountEl = document.getElementById("inventory-count");
+        const inventoryCapEl = document.getElementById("inventory-cap");
+        const inventoryListEl = document.getElementById("inventory-list");
+        const waterCapacityEl = document.getElementById("water-capacity");
+        const consoleOutputEl = document.getElementById("console-output");
+        const runBtn = document.getElementById("run-btn");
+        const techBtn = document.getElementById("tech-btn");
+        const helpBtn = document.getElementById("help-btn");
+        const codeEditor = document.getElementById("code-editor");
+        const currentGridSizeEl = document.getElementById("current-grid-size");
+        const upgradesListEl = document.getElementById("upgrades-list");
+        const techModal = document.getElementById("tech-modal");
+        const closeModalBtn = document.getElementById("close-modal-btn");
+        const helpModal = document.getElementById("help-modal");
+        const closeHelpModalBtn = document.getElementById(
+          "close-help-modal-btn"
+        );
+        const functionListEl = document.getElementById("function-list");
+        const functionDetailsEl = document.getElementById("function-details");
+        const tabButtons = document.querySelectorAll(".tab-button");
+        let activeTab = "land";
+
+        // --- API Functions Data (Configuração do Help) ---
+        const apiFunctionsData = {
+          move: {
+            signature: "move('N'|'S'|'E'|'W')",
+            description:
+              "Move o drone uma casa na direção especificada (Norte, Sul, Leste, Oeste).",
+            details:
+              "A fazenda usa geometria de Toro (Toroidal), o que significa que se mover para fora do limite (ex: 'N' em y=0) o drone reaparece no lado oposto (y=size-1). A função é assíncrona.",
+          },
+          till: {
+            signature: "till()",
+            description:
+              "Prepara (ara) o bloco de terra atual para o plantio, mudando seu estado para 'TILLED'.",
+            details:
+              "A terra deve estar no estado 'EMPTY' para ser arada. Não é possível arar blocos que já estão plantados ou crescendo. Esta função é assíncrona.",
+          },
+          plant: {
+            signature: "plant('CULTURA')",
+            description:
+              "Planta a semente da cultura especificada no bloco atual.",
+            details:
+              "O bloco deve estar 'TILLED' e você deve ter as sementes em 'farmResources'. O trigo ('WHEAT') é gratuito e a única exceção. Use chaves como 'WHEAT', 'CARROT', 'CORN', etc. Esta função é assíncrona.",
+          },
+          harvest: {
+            signature: "harvest()",
+            description:
+              "Colhe a cultura do bloco atual se ela estiver no estado 'GROWN'.",
+            details:
+              "Se tentar colher antes de 'GROWN', você perderá a semente e o tempo investido, resetando o bloco para 'EMPTY'. Use `checkTile()` para evitar a penalidade. Função assíncrona.",
+          },
+          water: {
+            signature: "water()",
+            description:
+              "Rega o bloco de terra atual, usando 1 unidade de ÁGUA do seu recipiente.",
+            details:
+              "O bloco precisa ser 'TILLED' ou 'PLANTED'. O efeito da água é permanente para o ciclo de crescimento atual. Ação gasta 1 unidade de ÁGUA. Função assíncrona.",
+          },
+          checkTile: {
+            signature: "checkTile()",
+            description:
+              "Retorna o estado atual do bloco de terra onde o drone está posicionado ('EMPTY', 'TILLED', 'PLANTED', 'GROWN').",
+            details:
+              "Esta função é síncrona (imediata) e é usada principalmente para lógica de controle de fluxo (ex: `if (checkTile() === 'GROWN') { ... }`).",
+          },
+          getItemCount: {
+            signature: "getItemCount('RECURSO')",
+            description:
+              "Retorna o número total de um recurso específico (colheita, semente ou ÁGUA) em sua reserva (farmResources).",
+            details:
+              "Exemplo de uso: `if (getItemCount('WATER') > 0) { water(); }`. É uma função síncrona.",
+          },
+          buyUpgrade: {
+            signature: "buyUpgrade('ID_UPGRADE')",
+            description:
+              "Tenta comprar um upgrade da Árvore Tecnológica usando o ID.",
+            details:
+              "O ID deve corresponder a um upgrade válido e você precisa ter os recursos necessários. Se a compra for bem-sucedida, o upgrade é aplicado. Função assíncrona.",
+          },
+          "console.log": {
+            signature: "console.log('mensagem')",
+            description:
+              "Envia uma mensagem de depuração para o Console do jogo (o painel inferior direito).",
+            details:
+              "Útil para rastrear o fluxo do seu código ou exibir valores variáveis. Diferente do console.log do navegador. Função síncrona.",
+          },
+        };
+
+        // Game State
+        let gameState = {
+          grid: [],
+          gridSize: { width: 1, height: 1 },
+          drone: {
+            x: 0,
+            y: 0,
+            inventory: {},
+            inventoryCapacity: 10,
+          },
+          farmResources: {
+            WATER: 0, // NEW
+            WHEAT: 0,
+            CARROT: 0,
+            BELL_PEPPER: 0,
+            CORN: 0,
+            TOMATO: 0,
+            WHEAT_SEED: 0,
+            CARROT_SEED: 0,
+            BELL_PEPPER_SEED: 0,
+            CORN_SEED: 0,
+            TOMATO_SEED: 0,
+          },
+          waterCapacity: 5, // NEW
+          rainChance: 0, // NEW: Base chance is handled in game loop
+          unlockedCrops: ["WHEAT"],
+          dropChances: {
+            CARROT_SEED: 0,
+            BELL_PEPPER_SEED: 0,
+            CORN_SEED: 0,
+            TOMATO_SEED: 0,
+          },
+          doubleHarvestChance: {
+            WHEAT: 0,
+            CARROT: 0,
+            BELL_PEPPER: 0,
+            CORN: 0,
+            TOMATO: 0,
+          },
+          codeFeatures: {
+            conditionals: false,
+            functions: false,
+            forLoop: false,
+            whileLoop: false,
+            autoRun: false,
+          },
+          upgrades: {},
+          isRunning: false, // Code execution is currently happening
+          isAutoRunning: false, // Code is running in a loop
+          lastRainCheck: 0, // For rain mechanics
+        };
+
+        const cropInfo = {
+          WHEAT: {
+            seed: "WHEAT_SEED",
+            emoji: "🌾",
+            seedEmoji: "🌱",
+            growthTime: 5000,
+            drops: "CARROT_SEED",
+          },
+          CARROT: {
+            seed: "CARROT_SEED",
+            emoji: "🥕",
+            seedEmoji: "🌰",
+            growthTime: 7000,
+            drops: "BELL_PEPPER_SEED",
+          },
+          BELL_PEPPER: {
+            seed: "BELL_PEPPER_SEED",
+            emoji: "🌶️",
+            seedEmoji: "🌿",
+            growthTime: 9000,
+            drops: "CORN_SEED",
+          },
+          CORN: {
+            seed: "CORN_SEED",
+            emoji: "🌽",
+            seedEmoji: "🟡",
+            growthTime: 12000,
+            drops: "TOMATO_SEED",
+          },
+          TOMATO: {
+            seed: "TOMATO_SEED",
+            emoji: "🍅",
+            seedEmoji: "🔴",
+            growthTime: 15000,
+            drops: null,
+          },
+        };
+
+        const UPGRADE_CATEGORIES = {
+          land: "Terreno",
+          capacity: "Capacidade do Drone",
+          harvest: "Multiplicadores de Colheita",
+          seeds: "Sementes",
+          water: "Recipiente de Água", // NEW CATEGORY
+          code: "Funcionalidades de Código",
+          inventory: "Inventário (Gerenciar Itens)",
+        };
+
+        // Define todos os upgrades (ATUALIZADO)
+        gameState.upgrades = {
+          // LAND UPGRADES
+          LAND_1_3x1: {
+            category: "land",
+            unlocked: false,
+            cost: { WHEAT: 5 },
+            name: "Expansão em Linha (1x3)",
+            effect: () => {
+              gameState.gridSize = { width: 1, height: 3 };
+            },
+            description:
+              "Expande a fazenda para 1 coluna e 3 linhas (3 tiles).",
+          },
+          LAND_3x1_3x3: {
+            category: "land",
+            unlocked: false,
+            cost: { WHEAT: 15, CARROT: 5 },
+            name: "Campo Pequeno (3x3)",
+            effect: () => {
+              gameState.gridSize = { width: 3, height: 3 };
+            },
+            description:
+              "Expande a fazenda para 3x3. Essencial para automação.",
+          },
+          LAND_3_5: {
+            category: "land",
+            unlocked: false,
+            cost: { CARROT: 50, BELL_PEPPER: 10 },
+            name: "Campo Médio I (5x5)",
+            effect: () => {
+              gameState.gridSize = { width: 5, height: 5 };
+            },
+            description: "Expande a fazenda para 5x5.",
+          },
+          LAND_5_7: {
+            category: "land",
+            unlocked: false,
+            cost: { BELL_PEPPER: 80, CORN: 20 },
+            name: "Campo Médio II (7x7)",
+            effect: () => {
+              gameState.gridSize = { width: 7, height: 7 };
+            },
+            description: "Expande a fazenda para 7x7.",
+          },
+          LAND_7_10: {
+            category: "land",
+            unlocked: false,
+            cost: { CORN: 150, TOMATO: 50 },
+            name: "Grande Campo I (10x10)",
+            effect: () => {
+              gameState.gridSize = { width: 10, height: 10 };
+            },
+            description: "Expande a fazenda para 10x10.",
+          },
+          LAND_10_15: {
+            category: "land",
+            unlocked: false,
+            cost: { CORN: 250, TOMATO: 100 },
+            name: "Grande Campo II (15x15)",
+            effect: () => {
+              gameState.gridSize = { width: 15, height: 15 };
+            },
+            description: "Expande a fazenda para 15x15.",
+          },
+          LAND_15_20: {
+            category: "land",
+            unlocked: false,
+            cost: { TOMATO: 300, WHEAT: 500 },
+            name: "Fazenda Enorme I (20x20)",
+            effect: () => {
+              gameState.gridSize = { width: 20, height: 20 };
+            },
+            description: "Expande a fazenda para 20x20.",
+          },
+          LAND_20_25: {
+            category: "land",
+            unlocked: false,
+            cost: { TOMATO: 500, CARROT: 800 },
+            name: "Fazenda Enorme II (25x25)",
+            effect: () => {
+              gameState.gridSize = { width: 25, height: 25 };
+            },
+            description: "Expande a fazenda para 25x25.",
+          },
+          LAND_25_30: {
+            category: "land",
+            unlocked: false,
+            cost: { BELL_PEPPER: 1000, CORN: 1000 },
+            name: "Fazenda Final (30x30)",
+            effect: () => {
+              gameState.gridSize = { width: 30, height: 30 };
+            },
+            description: "Expande a fazenda ao seu tamanho máximo: 30x30.",
+          },
+
+          // INVENTORY CAPACITY UPGRADES
+          INV_L2: {
+            category: "capacity",
+            unlocked: false,
+            cost: { WHEAT: 10 },
+            name: "Módulo de Carga I (+10)",
+            effect: () => {
+              gameState.drone.inventoryCapacity += 10;
+            },
+            description: "Aumenta a capacidade de carga em +10.",
+          },
+          INV_L3: {
+            category: "capacity",
+            unlocked: false,
+            cost: { WHEAT: 30, CARROT: 10 },
+            name: "Módulo de Carga II (+30)",
+            effect: () => {
+              gameState.drone.inventoryCapacity += 30;
+            },
+            description: "Aumenta a capacidade de carga em +30.",
+          },
+          INV_L4: {
+            category: "capacity",
+            unlocked: false,
+            cost: { CARROT: 50, BELL_PEPPER: 20 },
+            name: "Módulo de Carga III (+60)",
+            effect: () => {
+              gameState.drone.inventoryCapacity += 60;
+            },
+            description: "Aumenta a capacidade de carga em +60.",
+          },
+          INV_L5: {
+            category: "capacity",
+            unlocked: false,
+            cost: { BELL_PEPPER: 100, CORN: 50 },
+            name: "Módulo de Carga IV (+100)",
+            effect: () => {
+              gameState.drone.inventoryCapacity += 100;
+            },
+            description: "Aumenta a capacidade de carga em +100.",
+          },
+          INV_L6: {
+            category: "capacity",
+            unlocked: false,
+            cost: { CORN: 200, TOMATO: 80 },
+            name: "Módulo de Carga V (+200)",
+            effect: () => {
+              gameState.drone.inventoryCapacity += 200;
+            },
+            description: "Aumenta a capacidade de carga em +200.",
+          },
+
+          // HARVEST MULTIPLIER UPGRADES
+          DOUBLE_WHEAT: {
+            category: "harvest",
+            unlocked: false,
+            cost: { WHEAT: 20 },
+            name: "Colheita Dupla de Trigo",
+            effect: () => {
+              gameState.doubleHarvestChance.WHEAT = 10;
+            },
+            description: "10% de chance de obter o dobro de Trigo ao colher.",
+          },
+          DOUBLE_CARROT: {
+            category: "harvest",
+            unlocked: false,
+            cost: { CARROT: 30 },
+            name: "Colheita Dupla de Cenoura",
+            effect: () => {
+              gameState.doubleHarvestChance.CARROT = 10;
+            },
+            description: "10% de chance de obter o dobro de Cenoura ao colher.",
+          },
+          DOUBLE_BELL_PEPPER: {
+            category: "harvest",
+            unlocked: false,
+            cost: { BELL_PEPPER: 50 },
+            name: "Colheita Dupla de Pimentão",
+            effect: () => {
+              gameState.doubleHarvestChance.BELL_PEPPER = 10;
+            },
+            description:
+              "10% de chance de obter o dobro de Pimentão ao colher.",
+          },
+
+          // SEED UPGRADES
+          SEED_CARROT: {
+            category: "seeds",
+            unlocked: false,
+            cost: { WHEAT: 15 },
+            name: "Desbloquear Cenoura",
+            effect: () => {
+              gameState.unlockedCrops.push("CARROT");
+              gameState.farmResources["CARROT_SEED"] += 5;
+              gameState.dropChances["CARROT_SEED"] = 5;
+            },
+            description:
+              "Desbloqueia a Cenoura e dá 5 Sementes. (Chance de drop de 5% de Trigo para Cenoura).",
+          },
+          SEED_CARROT_CHANCE: {
+            category: "seeds",
+            unlocked: false,
+            cost: { CARROT: 10 },
+            name: "Mestre da Cenoura",
+            effect: () => {
+              gameState.dropChances["CARROT_SEED"] = 15;
+            },
+            description:
+              "Aumenta a chance de drop de Sementes de Cenoura para 15%.",
+          },
+
+          SEED_BELL_PEPPER: {
+            category: "seeds",
+            unlocked: false,
+            cost: { CARROT: 30 },
+            name: "Desbloquear Pimentão",
+            effect: () => {
+              gameState.unlockedCrops.push("BELL_PEPPER");
+              gameState.farmResources["BELL_PEPPER_SEED"] += 5;
+              gameState.dropChances["BELL_PEPPER_SEED"] = 5;
+            },
+            description:
+              "Desbloqueia o Pimentão e dá 5 Sementes. (Chance de drop de 5% de Cenoura para Pimentão).",
+          },
+          SEED_BELL_PEPPER_CHANCE: {
+            category: "seeds",
+            unlocked: false,
+            cost: { BELL_PEPPER: 15 },
+            name: "Mestre do Pimentão",
+            effect: () => {
+              gameState.dropChances["BELL_PEPPER_SEED"] = 15;
+            },
+            description:
+              "Aumenta a chance de drop de Sementes de Pimentão para 15%",
+          },
+
+          SEED_CORN: {
+            category: "seeds",
+            unlocked: false,
+            cost: { BELL_PEPPER: 50 },
+            name: "Desbloquear Milho",
+            effect: () => {
+              gameState.unlockedCrops.push("CORN");
+              gameState.farmResources["CORN_SEED"] += 5;
+              gameState.dropChances["CORN_SEED"] = 5;
+            },
+            description: "Desbloqueia o Milho e dá 5 Sementes.",
+          },
+
+          SEED_TOMATO: {
+            category: "seeds",
+            unlocked: false,
+            cost: { CORN: 70 },
+            name: "Desbloquear Tomate",
+            effect: () => {
+              gameState.unlockedCrops.push("TOMATO");
+              gameState.farmResources["TOMATO_SEED"] += 5;
+              gameState.dropChances["TOMATO_SEED"] = 5;
+            },
+            description: "Desbloqueia o Tomate e dá 5 Sementes.",
+          },
+
+          // WATER UPGRADES (NEW)
+          WATER_CAP1: {
+            category: "water",
+            unlocked: false,
+            cost: { WHEAT: 20, CARROT: 5 },
+            name: "Recipiente Padrão (+20)",
+            effect: () => {
+              gameState.waterCapacity += 20;
+            },
+            description:
+              "Aumenta a capacidade de água em +20. Capacidade atual: ",
+          },
+          WATER_CAP2: {
+            category: "water",
+            unlocked: false,
+            cost: { CARROT: 40, BELL_PEPPER: 10 },
+            name: "Recipiente Grande (+50)",
+            effect: () => {
+              gameState.waterCapacity += 50;
+            },
+            description: "Aumenta a capacidade de água em +50.",
+          },
+          WATER_RAIN_I: {
+            category: "water",
+            unlocked: false,
+            cost: { BELL_PEPPER: 80, CORN: 20 },
+            name: "Aumento de Chuva I (Base)",
+            effect: () => {
+              gameState.rainChance = 3;
+            },
+            description: "Adiciona 3% de chance de chover por ciclo de jogo.",
+          },
+          WATER_RAIN_II: {
+            category: "water",
+            unlocked: false,
+            cost: { CORN: 150, TOMATO: 50 },
+            name: "Aumento de Chuva II (Avançado)",
+            effect: () => {
+              gameState.rainChance = 6;
+            },
+            description:
+              "Aumenta a chance de chover para 6% por ciclo de jogo.",
+          },
+
+          // CODE UPGRADES
+          CODE_CONDITIONALS: {
+            category: "code",
+            unlocked: false,
+            cost: { WHEAT: 20 },
+            name: "Desbloquear Condicionais (if/else)",
+            effect: () => {
+              gameState.codeFeatures.conditionals = true;
+            },
+            description:
+              "Permite o uso de `if`, `else if` e `switch` para lógica reativa (ex: checar se pode colher).",
+          },
+          CODE_AUTO_RUN: {
+            category: "code",
+            unlocked: false,
+            cost: { WHEAT: 100, CARROT: 10 },
+            name: "Execução Automática (Auto Run)",
+            effect: () => {
+              gameState.codeFeatures.autoRun = true;
+            },
+            description:
+              'Permite que seu código rode em loop a cada 2s, liberando-o de clicar "Executar".',
+          },
+          CODE_FUNCTIONS: {
+            category: "code",
+            unlocked: false,
+            cost: { CARROT: 50, BELL_PEPPER: 10 },
+            name: "Desbloquear Funções",
+            effect: () => {
+              gameState.codeFeatures.functions = true;
+            },
+            description:
+              "Permite criar e usar suas próprias funções para organização e modularidade de código.",
+          },
+          CODE_FOR_LOOP: {
+            category: "code",
+            unlocked: false,
+            cost: { BELL_PEPPER: 50, CORN: 10 },
+            name: 'Desbloquear Laço "for"',
+            effect: () => {
+              gameState.codeFeatures.forLoop = true;
+            },
+            description:
+              "Permite o uso de laços `for` para repetições definidas, essencial em fazendas grandes.",
+          },
+          CODE_WHILE_LOOP: {
+            category: "code",
+            unlocked: false,
+            cost: { CORN: 50, TOMATO: 10 },
+            name: 'Desbloquear Laços "while/do-while"',
+            effect: () => {
+              gameState.codeFeatures.whileLoop = true;
+            },
+            description:
+              "Permite o uso de laços `while` e `do-while` para repetições baseadas em condições.",
+          },
+        };
+        const dropMap = {
+          WHEAT: "CARROT_SEED",
+          CARROT: "BELL_PEPPER_SEED",
+          BELL_PEPPER: "CORN_SEED",
+          CORN: "TOMATO_SEED",
+        };
+
+        // Chart.js instance
+        let productionChart;
+
+        function initializeChart() {
+          const ctx = document
+            .getElementById("productionChart")
+            .getContext("2d");
+          productionChart = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: [0],
+              datasets: [
+                {
+                  label: "Trigo Colhido",
+                  data: [0],
+                  backgroundColor: "rgba(252, 211, 77, 0.2)",
+                  borderColor: "rgba(252, 211, 77, 1)",
+                  borderWidth: 2,
+                  tension: 0.1,
+                  fill: true,
+                },
+              ],
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: { color: "#e0e0e0" },
+                  grid: { color: "rgba(224, 224, 224, 0.1)" },
+                },
+                x: {
+                  ticks: { color: "#e0e0e0" },
+                  grid: { color: "rgba(224, 224, 224, 0.1)" },
+                },
+              },
+              plugins: {
+                legend: { labels: { color: "#e0e0e0" } },
+              },
+              maintainAspectRatio: false,
+              responsive: true,
+            },
+          });
+        }
+
+        function updateChart() {
+          if (!productionChart) return;
+          const lastLabel =
+            productionChart.data.labels[productionChart.data.labels.length - 1];
+          productionChart.data.labels.push(lastLabel + 1);
+          productionChart.data.datasets.forEach((dataset) => {
+            if (dataset.label.includes("Trigo")) {
+              dataset.data.push(gameState.farmResources["WHEAT"]);
+            }
+          });
+          if (productionChart.data.labels.length > 20) {
+            productionChart.data.labels.shift();
+            productionChart.data.datasets.forEach((d) => d.data.shift());
+          }
+          productionChart.update();
+        }
+
+        // Game Logic
+        function initGame() {
+          const { width, height } = gameState.gridSize;
+          const oldGrid = gameState.grid;
+
+          // Initialize or resize grid (preserves state)
+          gameState.grid = Array(height)
+            .fill(null)
+            .map((_, y) =>
+              Array(width)
+                .fill(null)
+                .map((_, x) => {
+                  // Check if old tile exists at this location
+                  if (oldGrid[y] && oldGrid[y][x]) {
+                    return oldGrid[y][x];
+                  }
+                  // Create new tile
+                  return {
+                    state: "EMPTY",
+                    crop: null,
+                    plantedAt: null,
+                    watered: false,
+                  };
+                })
+            );
+
+          gameState.drone.x = Math.min(gameState.drone.x, width - 1);
+          gameState.drone.y = Math.min(gameState.drone.y, height - 1);
+
+          render();
+          updateTechTreeModal();
+          updateDroneVisualPosition(
+            gameState.drone.x,
+            gameState.drone.y,
+            width,
+            height,
+            false
+          );
+          logToConsole(`Jogo iniciado. Fazenda ${width}x${height}.`, "info");
+        }
+
+        function plantCrop(x, y, cropType) {
+          const { width, height } = gameState.gridSize;
+          if (x < 0 || x >= width || y < 0 || y >= height) return;
+          const tile = gameState.grid[y][x];
+          tile.state = "PLANTED";
+          tile.crop = cropType;
+          tile.plantedAt = Date.now();
+          tile.watered = false; // Must be re-watered
+        }
+
+        function updateDroneVisualPosition(
+          x,
+          y,
+          width,
+          height,
+          animated = true
+        ) {
+          const gridEl = farmGridEl;
+          const gridRect = gridEl.getBoundingClientRect();
+          const gridWidth = gridEl.clientWidth;
+          const gridHeight = gridEl.clientHeight;
+          const gridPadding = 8;
+          const gap = 4;
+
+          if (width === 0 || height === 0) return;
+
+          // Calculate tile dimensions based on grid size and gaps
+          const tileW =
+            (gridWidth - gridPadding * 2 - gap * (width - 1)) / width;
+          const tileH =
+            (gridHeight - gridPadding * 2 - gap * (height - 1)) / height;
+
+          // Set drone size proportional to the tile
+          const droneSize = Math.min(tileW, tileH) * 0.8;
+          droneEl.style.width = `${droneSize}px`;
+          droneEl.style.height = `${droneSize}px`;
+
+          // Calculate position (center of the tile)
+          const xOffset =
+            x * (tileW + gap) + gridPadding + (tileW - droneSize) / 2;
+          const yOffset =
+            y * (tileH + gap) + gridPadding + (tileH - droneSize) / 2;
+
+          if (!animated) {
+            droneEl.style.transition = "none";
+          } else {
+            droneEl.style.transition = `transform ${
+              TILE_UPDATE_SPEED / 1000
+            }s ease-out`;
+          }
+
+          droneEl.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+        }
+
+        // --- Inventory Management Logic (exposed globally for modal buttons) ---
+        window.handleDiscard = (itemType, amount) => {
+          const parsedAmount = parseInt(amount);
+          if (gameState.farmResources[itemType] >= parsedAmount) {
+            gameState.farmResources[itemType] -= parsedAmount;
+            logToConsole(`Descartado ${parsedAmount} de ${itemType}.`, "warn");
+
+            // If discarding a crop, adjust the drone's inventory display count as well.
+            if (cropInfo[itemType] && !itemType.endsWith("_SEED")) {
+              gameState.drone.inventory[itemType] = Math.max(
+                0,
+                (gameState.drone.inventory[itemType] || 0) - parsedAmount
+              );
+              if (gameState.drone.inventory[itemType] === 0)
+                delete gameState.drone.inventory[itemType];
+            }
+            render();
+            updateTechTreeModal(); // Re-render the inventory tab
+          } else {
+            logToConsole(
+              `Erro: Não tem ${parsedAmount} de ${itemType} para descartar.`,
+              "error"
+            );
+          }
+        };
+
+        // --- API Functions for the user ---
+        const API = {
+          move: (direction) => {
+            return new Promise((resolve) => {
+              const { width, height } = gameState.gridSize;
+              let { x, y } = gameState.drone;
+              let newX = x,
+                newY = y;
+              switch (direction.toUpperCase()) {
+                case "N":
+                  newY--;
+                  break;
+                case "S":
+                  newY++;
+                  break;
+                case "E":
+                  newX++;
+                  break;
+                case "W":
+                  newX--;
+                  break;
+                default:
+                  logToConsole(
+                    `Erro: Direção inválida '${direction}'`,
+                    "error"
+                  );
+                  resolve();
+                  return;
+              }
+
+              // Wrap-Around (Torus Geometry) Logic
+              if (newX < 0) newX = width - 1;
+              else if (newX >= width) newX = 0;
+              if (newY < 0) newY = height - 1;
+              else if (newY >= height) newY = 0;
+
+              gameState.drone.x = newX;
+              gameState.drone.y = newY;
+              logToConsole(`Movido para (${newX}, ${newY})`);
+
+              updateDroneVisualPosition(newX, newY, width, height, true);
+
+              render();
+              setTimeout(resolve, TILE_UPDATE_SPEED);
+            });
+          },
+          till: () => {
+            return new Promise((resolve) => {
+              const { x, y } = gameState.drone;
+              const tile = gameState.grid[y][x];
+              if (tile.state === "EMPTY") {
+                tile.state = "TILLED";
+                logToConsole(`Terra arada em (${x}, ${y})`);
+              } else {
+                logToConsole(
+                  `Não é possível arar aqui. Estado: ${tile.state}`,
+                  "warn"
+                );
+              }
+              render();
+              setTimeout(resolve, TILE_UPDATE_SPEED);
+            });
+          },
+          plant: (cropType) => {
+            return new Promise((resolve) => {
+              const { x, y } = gameState.drone;
+              const tile = gameState.grid[y][x];
+
+              if (!gameState.unlockedCrops.includes(cropType)) {
+                logToConsole(
+                  `Erro: Colheita '${cropType}' não desbloqueada.`,
+                  "error"
+                );
+                setTimeout(resolve, TILE_UPDATE_SPEED);
+                return;
+              }
+
+              const seedType = cropInfo[cropType]?.seed;
+              const isFreeCrop = cropType === "WHEAT";
+              const hasSeeds =
+                isFreeCrop || gameState.farmResources[seedType] > 0;
+
+              if (tile.state === "TILLED" && hasSeeds) {
+                if (!isFreeCrop) {
+                  gameState.farmResources[seedType]--; // Deduct only if it requires seeds
+                }
+                plantCrop(x, y, cropType);
+                logToConsole(`${cropType} plantado em (${x}, ${y})`);
+              } else if (!hasSeeds) {
+                logToConsole(
+                  `Sem sementes de ${cropType} para plantar.`,
+                  "warn"
+                );
+              } else {
+                logToConsole(
+                  `Não é possível plantar aqui. A terra precisa ser arada.`,
+                  "warn"
+                );
+              }
+              render();
+              setTimeout(resolve, TILE_UPDATE_SPEED);
+            });
+          },
+          harvest: () => {
+            return new Promise((resolve) => {
+              const { x, y } = gameState.drone;
+              const tile = gameState.grid[y][x];
+
+              const inventorySize = Object.values(
+                gameState.drone.inventory
+              ).reduce((a, b) => a + b, 0);
+              if (inventorySize >= gameState.drone.inventoryCapacity) {
+                logToConsole(
+                  "Erro: Inventário do drone está cheio. Descarte ou use itens.",
+                  "error"
+                );
+                setTimeout(resolve, TILE_UPDATE_SPEED);
+                return;
+              }
+
+              if (tile.state === "GROWN") {
+                const cropType = tile.crop;
+
+                // *** DOUBLE HARVEST CHANCE ***
+                const doubleChance =
+                  gameState.doubleHarvestChance[cropType] || 0;
+                let amount = 1;
+                if (Math.random() * 100 < doubleChance) {
+                  amount = 2;
+                  logToConsole(
+                    `🔥 Colheita Dupla! Obtido 2x ${cropType}.`,
+                    "info"
+                  );
+                }
+
+                gameState.drone.inventory[cropType] =
+                  (gameState.drone.inventory[cropType] || 0) + amount;
+                gameState.farmResources[cropType] =
+                  (gameState.farmResources[cropType] || 0) + amount;
+
+                // *** SEED DROP CHANCE ***
+                const nextSeedType = dropMap[cropType];
+                if (nextSeedType) {
+                  const dropChance = gameState.dropChances[nextSeedType] || 0;
+                  if (Math.random() * 100 < dropChance) {
+                    gameState.farmResources[nextSeedType]++;
+                    const baseCrop = nextSeedType.replace("_SEED", "");
+                    logToConsole(
+                      `🎉 Semente de ${baseCrop} obtida! (Chance: ${dropChance}%)`,
+                      "info"
+                    );
+                  }
+                }
+
+                tile.state = "EMPTY";
+                tile.crop = null;
+                tile.plantedAt = null;
+                tile.watered = false;
+                logToConsole(
+                  `${cropType} colhido (${amount}x) de (${x}, ${y})`
+                );
+                updateChart();
+              } else {
+                // NEW: Harvest Penalty
+                if (tile.state === "PLANTED" || tile.state === "TILLED") {
+                  logToConsole(
+                    `❌ Penalidade! Colheita falhou em ${tile.state}. Bloco resetado para 'EMPTY'.`,
+                    "error"
+                  );
+                  tile.state = "EMPTY";
+                  tile.crop = null;
+                  tile.plantedAt = null;
+                  tile.watered = false;
+                } else {
+                  logToConsole(
+                    `Nada para colher em (${x}, ${y}). Estado: ${tile.state}`,
+                    "warn"
+                  );
+                }
+              }
+              render();
+              setTimeout(resolve, TILE_UPDATE_SPEED);
+            });
+          },
+          water: () => {
+            return new Promise((resolve) => {
+              const { x, y } = gameState.drone;
+              const tile = gameState.grid[y][x];
+
+              if (gameState.farmResources["WATER"] <= 0) {
+                logToConsole(
+                  "Erro: Sem água no recipiente para regar.",
+                  "error"
+                );
+                setTimeout(resolve, TILE_UPDATE_SPEED);
+                return;
+              }
+
+              if (tile.state === "PLANTED" || tile.state === "TILLED") {
+                tile.watered = true;
+                gameState.farmResources["WATER"]--; // Consume 1 unit of water
+                logToConsole(
+                  `Terra regada em (${x}, ${y}). Água restante: ${gameState.farmResources["WATER"]}`
+                );
+              } else {
+                logToConsole(`Não há necessidade de regar aqui.`, "warn");
+              }
+              render();
+              setTimeout(resolve, TILE_UPDATE_SPEED);
+            });
+          },
+          checkTile: () => {
+            const { x, y } = gameState.drone;
+            const tile = gameState.grid[y][x];
+            return tile.state;
+          },
+          getItemCount: (item) => {
+            return gameState.farmResources[item] || 0;
+          },
+          buyUpgrade: (upgradeID) => {
+            return new Promise((resolve) => {
+              setTimeout(() => {
+                const result = handleBuyUpgrade(upgradeID);
+                if (result) {
+                  logToConsole(
+                    `Upgrade ${upgradeID} comprado com sucesso.`,
+                    "info"
+                  );
+                } else {
+                  logToConsole(
+                    `Falha ao comprar ${upgradeID}. Verifique os recursos.`,
+                    "error"
+                  );
+                }
+                render();
+                resolve();
+              }, 500); // Simulate network delay
+            });
+          },
+          console: {
+            log: (message) => {
+              logToConsole(message, "user");
+            },
+          },
+        };
+
+        function handleBuyUpgrade(upgradeID) {
+          const upgrade = gameState.upgrades[upgradeID];
+          if (!upgrade || upgrade.unlocked) return false;
+
+          let canAfford = true;
+          for (const item in upgrade.cost) {
+            if (gameState.farmResources[item] < upgrade.cost[item]) {
+              canAfford = false;
+              break;
+            }
+          }
+
+          if (canAfford) {
+            for (const item in upgrade.cost) {
+              gameState.farmResources[item] -= upgrade.cost[item];
+            }
+
+            upgrade.effect();
+            upgrade.unlocked = true;
+
+            // Re-initialize farm for grid expansion if it was a land upgrade
+            if (upgrade.category === "land") {
+              initGame();
+            }
+
+            return true;
+          }
+          return false;
+        }
+
+        // --- Rendering ---
+        function render() {
+          const { width, height } = gameState.gridSize;
+          farmGridEl.style.gridTemplateColumns = `repeat(${width}, 1fr)`;
+          farmGridEl.style.gridTemplateRows = `repeat(${height}, 1fr)`; // Added for non-square grids
+          farmGridEl.innerHTML = "";
+
+          gameState.grid.forEach((row, y) => {
+            row.forEach((tileData, x) => {
+              const tile = document.createElement("div");
+              tile.className = "tile";
+              tile.dataset.x = x;
+              tile.dataset.y = y;
+              tile.classList.add(tileData.state.toLowerCase());
+              if (tileData.watered) tile.classList.add("watered");
+
+              if (tileData.state === "GROWN") {
+                tile.textContent = cropInfo[tileData.crop]?.emoji || "?";
+              }
+
+              farmGridEl.appendChild(tile);
+            });
+          });
+
+          updateDroneVisualPosition(
+            gameState.drone.x,
+            gameState.drone.y,
+            width,
+            height,
+            false
+          );
+
+          // Update Status
+          dronePosEl.textContent = `(${gameState.drone.x}, ${gameState.drone.y})`;
+          const inventorySize = Object.values(gameState.drone.inventory).reduce(
+            (a, b) => a + b,
+            0
+          );
+          inventoryCountEl.textContent = inventorySize;
+          inventoryCapEl.textContent = gameState.drone.inventoryCapacity;
+          currentGridSizeEl.textContent = `${width}x${height}`;
+          waterCapacityEl.textContent = gameState.waterCapacity;
+
+          inventoryListEl.innerHTML = Object.entries(gameState.drone.inventory)
+            .filter(([, count]) => count > 0)
+            .map(
+              ([item, count]) =>
+                `<span class="text-yellow-300">${
+                  cropInfo[item]?.emoji || item
+                }: ${count}</span>`
+            )
+            .join(" | ");
+
+          // Update Farm Resources
+          Object.keys(gameState.farmResources).forEach((key) => {
+            const el = document.getElementById(`resource-${key}`);
+            if (el) el.textContent = gameState.farmResources[key];
+          });
+
+          // Update Run Button Text/Style
+          if (gameState.isAutoRunning) {
+            runBtn.textContent = "Parar Execução (Auto)";
+            runBtn.classList.remove("btn-primary");
+            runBtn.classList.add("bg-red-600", "hover:bg-red-500");
+          } else {
+            runBtn.textContent = gameState.isRunning
+              ? "Executando..."
+              : "Executar Código";
+            runBtn.disabled = gameState.isRunning;
+            runBtn.classList.add("btn-primary");
+            runBtn.classList.remove("bg-red-600", "hover:bg-red-500");
+          }
+
+          // Update Tech Tree button color if affordable upgrade exists
+          const canBuy = Object.keys(gameState.upgrades).some((id) => {
+            const up = gameState.upgrades[id];
+            if (up.unlocked) return false;
+            return Object.keys(up.cost).every(
+              (item) => gameState.farmResources[item] >= up.cost[item]
+            );
+          });
+
+          if (canBuy) {
+            techBtn.classList.remove("text-white", "border-teal-300");
+            techBtn.classList.add(
+              "bg-yellow-500",
+              "hover:bg-yellow-400",
+              "text-gray-900",
+              "border-yellow-300"
+            );
+          } else {
+            techBtn.classList.remove(
+              "bg-yellow-500",
+              "hover:bg-yellow-400",
+              "text-gray-900",
+              "border-yellow-300"
+            );
+            techBtn.classList.add("text-white", "border-teal-300");
+          }
+        }
+
+        // Renders the Upgrade Tabs
+        function renderUpgradeTab(category) {
+          let html = "";
+          const upgradesToShow = Object.entries(gameState.upgrades).filter(
+            ([, up]) => up.category === category
+          );
+
+          if (upgradesToShow.length === 0) {
+            return `<p class="text-gray-400 italic p-4">Nenhum upgrade disponível nesta categoria no momento.</p>`;
+          }
+
+          upgradesToShow.forEach(([id, upgrade]) => {
+            const isAffordable = Object.keys(upgrade.cost).every(
+              (item) => gameState.farmResources[item] >= upgrade.cost[item]
+            );
+            const buttonClasses = upgrade.unlocked
+              ? "btn-secondary opacity-50 cursor-not-allowed"
+              : isAffordable
+              ? "btn-primary"
+              : "bg-red-700 cursor-not-allowed";
+            const statusText = upgrade.unlocked
+              ? "Desbloqueado"
+              : isAffordable
+              ? "Comprar"
+              : "Recursos Insuficientes";
+
+            let extraInfo = "";
+            if (
+              upgrade.category === "seeds" &&
+              upgrade.name.includes("Mestre")
+            ) {
+              const seedType = upgrade.name.includes("Cenoura")
+                ? "CARROT_SEED"
+                : upgrade.name.includes("Pimentão")
+                ? "BELL_PEPPER_SEED"
+                : null;
+              if (seedType) {
+                extraInfo = `<p class="text-xs text-amber-400">Chance Atual: ${gameState.dropChances[seedType]}%</p>`;
+              }
+            } else if (
+              upgrade.category === "harvest" &&
+              upgrade.name.includes("Dupla")
+            ) {
+              const cropName = upgrade.name.replace("Colheita Dupla de ", "");
+              const cropKey = cropName.toUpperCase();
+              extraInfo = `<p class="text-xs text-red-400">Chance de 2x: ${
+                gameState.doubleHarvestChance[cropKey] || 0
+              }%</p>`;
+            } else if (upgrade.category === "code") {
+              extraInfo = `<p class="text-xs text-yellow-400">Status: ${
+                upgrade.unlocked ? "✅ Desbloqueado" : "❌ Bloqueado"
+              }</p>`;
+            } else if (upgrade.category === "water") {
+              if (upgrade.name.includes("Recipiente")) {
+                extraInfo = `<p class="text-xs text-blue-400">Capacidade atual: ${gameState.waterCapacity}</p>`;
+              } else if (upgrade.name.includes("Chuva")) {
+                extraInfo = `<p class="text-xs text-blue-400">Chance de Chuva base: ${gameState.rainChance}%</p>`;
+              }
+            }
+
+            const borderBaseColor =
+              {
+                land: "amber",
+                capacity: "indigo",
+                harvest: "red",
+                seeds: "green",
+                code: "purple",
+                water: "blue", // NEW
+              }[category] || "gray";
+
+            const costHtml = Object.entries(upgrade.cost)
+              .map(([item, count]) => {
+                const isSeed = item.endsWith("_SEED");
+                const baseCrop = isSeed ? item.replace("_SEED", "") : item;
+                let emoji =
+                  cropInfo[baseCrop]?.[isSeed ? "seedEmoji" : "emoji"] || "❓";
+                if (item === "WATER") emoji = "💧";
+                const color =
+                  gameState.farmResources[item] >= count
+                    ? "text-green-400"
+                    : "text-red-400";
+                return `<span class="${color}">${count} <span class="text-white">${emoji} ${item.replace(
+                  "_SEED",
+                  ""
+                )}</span></span>`;
+              })
+              .join(", ");
+
+            html += `
+                              <div class="card border-2 border-${borderBaseColor}-400/50 hover:border-${borderBaseColor}-400 transition-colors duration-200">
+                                  <div class="flex justify-between items-start">
+                                      <div>
+                                          <h3 class="font-bold text-lg text-${borderBaseColor}-300">${
+              upgrade.name
+            }</h3>
+                                          <p class="text-xs text-slate-300 mb-2">${
+                                            upgrade.description
+                                          }</p>
+                                          <p class="text-sm font-mono text-slate-200">Custo: ${costHtml}</p>
+                                          ${extraInfo}
+                                      </div>
+                                      <button data-id="${id}" class="buy-upgrade-btn btn ${buttonClasses}" ${
+              !isAffordable || upgrade.unlocked ? "disabled" : ""
+            }>
+                                          ${statusText}
+                                      </button>
+                                  </div>
+                              </div>
+                          `;
+          });
+          return html;
+        }
+
+        // Renders the Inventory Management Tab
+        function renderInventoryTab() {
+          let inventoryHtml = "";
+          // Include WATER in the inventory list if it exists
+          const items = Object.entries(gameState.farmResources).filter(
+            ([item, count]) => count > 0 && item !== "WATER"
+          );
+
+          if (items.length === 0) {
+            return `<p class="text-gray-400 italic p-4">O seu inventário e reserva de recursos (além da água) estão vazios.</p>`;
+          }
+
+          inventoryHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">`;
+
+          items.forEach(([item, count]) => {
+            const isSeed = item.endsWith("_SEED");
+            const baseCrop = item.replace("_SEED", "");
+            const info = cropInfo[baseCrop] || {};
+            const emoji = isSeed ? info.seedEmoji || "❓" : info.emoji || "❓";
+            const name = item.toUpperCase().replace("_", " ");
+            const discard10Amount = Math.min(10, count);
+
+            inventoryHtml += `
+                              <div class="card p-3 flex items-center justify-between border-l-4 ${
+                                isSeed ? "border-amber-500" : "border-green-500"
+                              } bg-[#383838]">
+                                  <div class="flex items-center">
+                                      <span class="text-3xl mr-3">${emoji}</span>
+                                      <div>
+                                          <p class="font-bold text-sm text-white">${name}</p>
+                                          <p class="text-lg font-mono text-teal-400">x${count}</p>
+                                      </div>
+                                  </div>
+                                  <div class="space-y-1 flex flex-col items-end">
+                                      <button onclick="window.handleDiscard('${item}', 1)" class="btn bg-red-600 hover:bg-red-500 text-xs py-1 px-2">
+                                          Descartar 1
+                                      </button>
+                                      ${
+                                        count >= 10
+                                          ? `<button onclick="window.handleDiscard('${item}', ${discard10Amount})" class="btn bg-red-800 hover:bg-red-700 text-xs py-1 px-2">
+                                              Descartar ${discard10Amount}
+                                          </button>`
+                                          : ""
+                                      }
+                                  </div>
+                              </div>
+                          `;
+          });
+
+          inventoryHtml += `</div>`;
+          return inventoryHtml;
+        }
+
+        function updateTechTreeModal() {
+          upgradesListEl.innerHTML = "";
+
+          if (activeTab === "inventory") {
+            upgradesListEl.innerHTML = renderInventoryTab();
+          } else {
+            upgradesListEl.innerHTML = renderUpgradeTab(activeTab);
+
+            document.querySelectorAll(".buy-upgrade-btn").forEach((button) => {
+              button.addEventListener("click", (e) => {
+                const id = e.target.dataset.id;
+                handleBuyUpgrade(id);
+                updateTechTreeModal(); // Re-render to show unlocked status
+              });
+            });
+          }
+        }
+
+        function logToConsole(message, type = "log") {
+          const p = document.createElement("p");
+          let fullMessage = `> ${message}`;
+          if (typeof message === "object") {
+            fullMessage = `> ${JSON.stringify(message)}`;
+          }
+          p.textContent = fullMessage;
+          switch (type) {
+            case "error":
+              p.className = "text-red-400 font-bold";
+              break;
+            case "warn":
+              p.className = "text-yellow-400";
+              break;
+            case "info":
+              p.className = "text-blue-400";
+              break;
+            case "user":
+              p.className = "text-purple-400";
+              break;
+            default:
+              p.className = "text-gray-300";
+              break;
+          }
+          consoleOutputEl.appendChild(p);
+          consoleOutputEl.scrollTop = consoleOutputEl.scrollHeight;
+        }
+
+        // --- Help Modal Logic ---
+
+        function renderFunctionList() {
+          functionListEl.innerHTML = "";
+          Object.keys(apiFunctionsData).forEach((funcName) => {
+            const item = document.createElement("div");
+            item.className = "func-item";
+            item.textContent = funcName;
+            item.dataset.func = funcName;
+            item.addEventListener("click", () =>
+              displayFunctionDetails(funcName)
+            );
+            functionListEl.appendChild(item);
+          });
+          const firstFunc = Object.keys(apiFunctionsData)[0];
+          if (firstFunc) {
+            displayFunctionDetails(firstFunc);
+          }
+        }
+
+        function displayFunctionDetails(funcName) {
+          document
+            .querySelectorAll(".func-item")
+            .forEach((item) => item.classList.remove("active"));
+          const activeItem = document.querySelector(
+            `.func-item[data-func="${funcName}"]`
+          );
+          if (activeItem) activeItem.classList.add("active");
+
+          const data = apiFunctionsData[funcName];
+
+          functionDetailsEl.innerHTML = `
+                          <h3 class="text-2xl font-bold text-teal-400 mb-4">${data.signature}</h3>
+
+                          <div class="space-y-4 w-full">
+                              <div class="card p-4 border-l-4 border-indigo-500 bg-[#383838]">
+                                  <p class="text-lg font-semibold text-white mb-2">Descrição Curta:</p>
+                                  <p class="text-slate-300">${data.description}</p>
+                              </div>
+
+                              <div class="card p-4 border-l-4 border-amber-500 bg-[#383838]">
+                                  <p class="text-lg font-semibold text-white mb-2">Detalhes e Assincronicidade:</p>
+                                  <p class="text-slate-300">${data.details}</p>
+                              </div>
+                          </div>
+                      `;
+        }
+
+        // --- Code Validation ---
+        function validateCode(code) {
+          // 1. Check for Conditional Logic (if/else, switch)
+          if (!gameState.codeFeatures.conditionals) {
+            const conditionalRegex = /\b(if|else|switch)\s*\(/g;
+            if (conditionalRegex.test(code)) {
+              throw new Error(
+                "[CODE_BLOCKED] O uso de Condicionais (`if`, `switch`) está bloqueado. Compre o upgrade 'CODE_CONDITIONALS'."
+              );
+            }
+          }
+          // 2. Check for custom function declarations (BLOCKS ALL USER-DEFINED FUNCTIONS)
+          if (!gameState.codeFeatures.functions) {
+            const customFuncRegex =
+              /\bfunction\s+[a-zA-Z0-9_]+\s*\([^)]*\)\s*\{|const\s+[a-zA-Z0-9_]+\s*=\s*\([^)]*\)\s*=>|var\s+[a-zA-Z0-9_]+\s*=\s*function\s*\([^)]*\)\s*\{/g;
+            let match;
+            if (customFuncRegex.test(code)) {
+              customFuncRegex.lastIndex = 0;
+              match = customFuncRegex.exec(code);
+              let funcName = "desconhecida";
+              if (match && match[0].startsWith("function")) {
+                const nameMatch = match[0].match(
+                  /\bfunction\s+([a-zA-Z0-9_]+)/
+                );
+                funcName = nameMatch ? nameMatch[1] : funcName;
+              } else if (
+                match &&
+                (match[0].startsWith("const") || match[0].startsWith("var"))
+              ) {
+                const nameMatch = match[0].match(
+                  /\b(const|var)\s+([a-zA-Z0-9_]+)/
+                );
+                funcName = nameMatch ? nameMatch[2] : funcName;
+              }
+
+              throw new Error(
+                `[CODE_BLOCKED] O uso de Funções personalizadas ('${funcName}') está bloqueado. Compre o upgrade 'CODE_FUNCTIONS'.`
+              );
+            }
+          }
+
+          // 3. Check for 'for' loops
+          if (!gameState.codeFeatures.forLoop) {
+            const forLoopRegex = /\bfor\s*\([^;]*;[^;]*;[^)]*\)\s*\{/g;
+            if (forLoopRegex.test(code)) {
+              throw new Error(
+                "[CODE_BLOCKED] O uso do laço `for` está bloqueado. Compre o upgrade 'CODE_FOR_LOOP'."
+              );
+            }
+          }
+
+          // 4. Check for 'while' and 'do-while' loops
+          if (!gameState.codeFeatures.whileLoop) {
+            const whileLoopRegex = /\b(while|do)\s*\([^)]*\)\s*\{/g;
+            if (whileLoopRegex.test(code)) {
+              throw new Error(
+                "[CODE_BLOCKED] O uso dos laços `while` ou `do-while` está bloqueado. Compre o upgrade 'CODE_WHILE_LOOP'."
+              );
+            }
+          }
+        }
+
+        // --- Code Execution ---
+        async function runSingleCycle() {
+          if (gameState.isRunning) return;
+
+          const userCode = codeEditor.value;
+
+          try {
+            // Check for locked features FIRST
+            validateCode(userCode);
+
+            gameState.isRunning = true;
+            // Only disable button if not auto-running (auto-run handles its own state)
+            if (!gameState.isAutoRunning) {
+              runBtn.disabled = true;
+              runBtn.textContent = "Executando...";
+            }
+
+            // Clear and prepare console (only non-error logs)
+            const infoLines = Array.from(consoleOutputEl.children).filter(
+              (p) =>
+                p.className.includes("info") ||
+                p.className.includes("warn") ||
+                p.className.includes("error")
+            );
+            consoleOutputEl.innerHTML = "";
+            infoLines.forEach((p) =>
+              consoleOutputEl.appendChild(p.cloneNode(true))
+            );
+            logToConsole(
+              gameState.isAutoRunning
+                ? "Iniciando ciclo automático..."
+                : "Iniciando execução...",
+              "info"
+            );
+
+            // Reset drone position to 0,0 for predictable script starts
+            gameState.drone.x = 0;
+            gameState.drone.y = 0;
+            const { width, height } = gameState.gridSize;
+            updateDroneVisualPosition(0, 0, width, height, false);
+
+            // Injecting all API functions for easy access in the user code
+            const asyncFunction = new Function(
+              "API",
+              `
+                              const { move, till, plant, harvest, water, checkTile, getItemCount, buyUpgrade, console } = API;
+                              return (async () => {
+                                  ${userCode}
+                              })();
+                          `
+            );
+
+            await asyncFunction(API);
+          } catch (e) {
+            logToConsole(`Erro de execução: ${e.message}`, "error");
+            // If error occurs during auto-run, stop the auto-run immediately
+            if (gameState.isAutoRunning) {
+              gameState.isAutoRunning = false;
+              logToConsole(
+                "Execução automática interrompida devido a erro.",
+                "error"
+              );
+            }
+          }
+
+          logToConsole("Ciclo concluído.", "info");
+          gameState.isRunning = false;
+          render();
+
+          // If auto-running, schedule the next cycle
+          if (gameState.isAutoRunning) {
+            setTimeout(autoRunLoop, AUTO_RUN_DELAY);
+          }
+        }
+
+        function autoRunLoop() {
+          if (gameState.isAutoRunning && !gameState.isRunning) {
+            runSingleCycle();
+          }
+        }
+
+        function toggleCodeExecution() {
+          if (gameState.isAutoRunning) {
+            // Stop auto-run
+            gameState.isAutoRunning = false;
+            logToConsole("Execução automática pausada pelo usuário.", "info");
+            render();
+          } else if (gameState.codeFeatures.autoRun) {
+            // Start auto-run if unlocked
+            gameState.isAutoRunning = true;
+            logToConsole("Execução automática iniciada. (Delay: 2s)", "info");
+            render();
+            autoRunLoop();
+          } else {
+            // Run single cycle if auto-run not unlocked
+            runSingleCycle();
+          }
+        }
+
+        // --- Game Loop (handles growth and rain) ---
+        function gameLoop() {
+          const now = Date.now();
+
+          // 1. Growth Calculation
+          gameState.grid.forEach((row) => {
+            row.forEach((tile) => {
+              if (tile.state === "PLANTED") {
+                const crop = cropInfo[tile.crop];
+                if (!crop) return;
+                const growthTime = crop.growthTime;
+                // Watered reduces time by 50%
+                const wateredBonus = tile.watered ? 0.5 : 1;
+                if (now - tile.plantedAt > growthTime * wateredBonus) {
+                  tile.state = "GROWN";
+                }
+              }
+            });
+          });
+
+          // 2. Rain Chance (Check every 5 seconds)
+          if (now - gameState.lastRainCheck > 5000) {
+            const chance = gameState.rainChance;
+            if (
+              chance > 0 &&
+              gameState.farmResources["WATER"] < gameState.waterCapacity
+            ) {
+              if (Math.random() * 100 < chance) {
+                gameState.farmResources["WATER"] = Math.min(
+                  gameState.farmResources["WATER"] + 1,
+                  gameState.waterCapacity
+                );
+                logToConsole(
+                  `🌧️ Chuva! 1 unidade de ÁGUA adicionada. (Chance: ${chance}%)`,
+                  "info"
+                );
+              }
+            }
+            gameState.lastRainCheck = now;
+          }
+
+          render();
+          requestAnimationFrame(gameLoop);
+        }
+
+        // Event Listeners
+        runBtn.addEventListener("click", toggleCodeExecution);
+
+        // Tech Modal Handlers
+        techBtn.addEventListener("click", () => {
+          updateTechTreeModal();
+          techModal.classList.remove("hidden", "opacity-0");
+          techModal.classList.add("opacity-100");
+        });
+
+        closeModalBtn.addEventListener("click", () => {
+          techModal.classList.remove("opacity-100");
+          techModal.classList.add("opacity-0");
+          setTimeout(() => techModal.classList.add("hidden"), 300);
+        });
+
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", (e) => {
+            tabButtons.forEach((btn) => btn.classList.remove("active"));
+            e.target.classList.add("active");
+            activeTab = e.target.dataset.tab;
+            updateTechTreeModal();
+          });
+        });
+
+        // Help Modal Handlers
+        helpBtn.addEventListener("click", () => {
+          renderFunctionList();
+          helpModal.classList.remove("hidden", "opacity-0");
+          helpModal.classList.add("opacity-100");
+        });
+
+        closeHelpModalBtn.addEventListener("click", () => {
+          helpModal.classList.remove("opacity-100");
+          helpModal.classList.add("opacity-0");
+          setTimeout(() => helpModal.classList.add("hidden"), 300);
+        });
+
+        // Handle responsive resizing to keep drone position correct
+        window.addEventListener("resize", () => {
+          const { width, height } = gameState.gridSize;
+          updateDroneVisualPosition(
+            gameState.drone.x,
+            gameState.drone.y,
+            width,
+            height,
+            false
+          );
+        });
+
+        // Start
+        initGame();
+        initializeChart();
+        gameLoop();
+      });
+    </script>
+  </body>
+</html>
