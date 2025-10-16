@@ -11,10 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght=400;600;700&display=swap"
-      rel="stylesheet"
-    />
+      rel="stylesheet" />
   </head>
-  <body class="">
+  <body class>
     <div id="game-container" class="p-4 max-w-screen-xl mx-auto">
       <header class="text-center mb-4">
         <h1 class="text-4xl font-bold text-indigo-400">
@@ -37,8 +36,7 @@
               <textarea
                 id="code-editor"
                 class="font-mono w-full h-full text-sm"
-                spellcheck="false"
-              >
+                spellcheck="false">
 O seu código é o seu fazendeiro!
 
 Comece focando no bloco 1x1 para acumular Trigos.
@@ -60,8 +58,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
 
         <!-- Center Panel: Farm Grid & Drone -->
         <div
-          class="lg:col-span-2 card flex items-center justify-center farm-grid-container"
-        >
+          class="lg:col-span-2 card flex items-center justify-center farm-grid-container">
           <div id="farm-grid" class="farm-grid"></div>
           <div id="drone-el"></div>
         </div>
@@ -75,9 +72,8 @@ Compre upgrades na Árvore Tecnológica para usá-los.
             <div id="drone-status">
               <p>
                 <strong>Posição:</strong>
-                <span id="drone-pos" class="font-mono text-teal-400"
-                  >(0, 0)</span
-                >
+                <span id="drone-pos" class="font-mono text-teal-400">(0,
+                  0)</span>
               </p>
               <p>
                 <strong>Capacidade:</strong>
@@ -86,8 +82,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
               </p>
               <div
                 id="inventory-list"
-                class="text-sm mt-1 text-yellow-200"
-              ></div>
+                class="text-sm mt-1 text-yellow-200"></div>
             </div>
           </div>
 
@@ -97,14 +92,12 @@ Compre upgrades na Árvore Tecnológica para usá-los.
             </h2>
             <div
               id="farm-resources"
-              class="grid grid-cols-2 gap-1 text-sm text-slate-200"
-            >
+              class="grid grid-cols-2 gap-1 text-sm text-slate-200">
               <!-- Water Status -->
               <p class="col-span-2 border-b border-slate-600 mb-1 pb-1">
                 💧 Água:
-                <span id="resource-WATER" class="text-blue-400 font-bold"
-                  >0</span
-                >
+                <span id="resource-WATER"
+                  class="text-blue-400 font-bold">0</span>
                 / <span id="water-capacity" class="text-blue-400">5</span>
               </p>
               <!-- Crops -->
@@ -114,8 +107,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
               <p>🌽 Milho: <span id="resource-CORN">0</span></p>
               <p>🍅 Tomate: <span id="resource-TOMATO">0</span></p>
               <div
-                class="col-span-2 text-xs pt-2 border-t border-slate-600 mt-2"
-              >
+                class="col-span-2 text-xs pt-2 border-t border-slate-600 mt-2">
                 <p class="font-bold text-sm text-yellow-500">🌱 Sementes:</p>
                 <p class="pl-2">
                   🌱 S. Trigo: <span id="resource-WHEAT_SEED">0</span>
@@ -162,8 +154,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
           </h2>
           <div
             class="chart-container"
-            style="position: relative; height: 25vh; width: 100%"
-          >
+            style="position: relative; height: 25vh; width: 100%">
             <canvas id="productionChart"></canvas>
           </div>
         </div>
@@ -179,8 +170,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
 
         <!-- Tabs Navigation -->
         <div
-          class="flex space-x-4 mb-0 border-b border-gray-700 overflow-x-auto"
-        >
+          class="flex space-x-4 mb-0 border-b border-gray-700 overflow-x-auto">
           <button data-tab="land" class="tab-button active">Terreno</button>
           <button data-tab="capacity" class="tab-button">
             Capacidade do Drone
@@ -220,21 +210,18 @@ Compre upgrades na Árvore Tecnológica para usá-los.
 
         <!-- Two-Column Layout for Help -->
         <div
-          class="flex h-[50vh] min-h-[400px] border border-gray-700 rounded-lg overflow-hidden"
-        >
+          class="flex h-[50vh] min-h-[400px] border border-gray-700 rounded-lg overflow-hidden">
           <!-- Left Panel: Function List -->
           <div
             id="function-list"
-            class="w-1/3 bg-[#333333] overflow-y-auto border-r border-gray-700"
-          >
+            class="w-1/3 bg-[#333333] overflow-y-auto border-r border-gray-700">
             <!-- Functions will be rendered here -->
           </div>
 
           <!-- Right Panel: Details -->
           <div
             id="function-details"
-            class="w-2/3 p-6 overflow-y-auto flex flex-col justify-center text-left"
-          >
+            class="w-2/3 p-6 overflow-y-auto flex flex-col justify-center text-left">
             <p class="text-lg text-slate-400 text-center">
               Selecione uma função na lista ao lado para ver os detalhes e
               exemplos de uso.
@@ -1646,13 +1633,17 @@ Compre upgrades na Árvore Tecnológica para usá-los.
           }
           // 2. Check for custom function declarations (BLOCKS ALL USER-DEFINED FUNCTIONS)
           if (!gameState.codeFeatures.functions) {
+            // Este regex procura APENAS a criação/declaração de uma nova função, 
+            // como 'function meuCiclo() {', 'const f = () =>', ou 'var f = function() {'
             const customFuncRegex =
               /\bfunction\s+[a-zA-Z0-9_]+\s*\([^)]*\)\s*\{|const\s+[a-zA-Z0-9_]+\s*=\s*\([^)]*\)\s*=>|var\s+[a-zA-Z0-9_]+\s*=\s*function\s*\([^)]*\)\s*\{/g;
             let match;
+            
             if (customFuncRegex.test(code)) {
               customFuncRegex.lastIndex = 0;
               match = customFuncRegex.exec(code);
               let funcName = "desconhecida";
+              
               if (match && match[0].startsWith("function")) {
                 const nameMatch = match[0].match(
                   /\bfunction\s+([a-zA-Z0-9_]+)/
@@ -1669,7 +1660,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
               }
 
               throw new Error(
-                `[CODE_BLOCKED] O uso de Funções personalizadas ('${funcName}') está bloqueado. Compre o upgrade 'CODE_FUNCTIONS'.`
+                `[CODE_BLOCKED] A declaração de Funções personalizadas ('${funcName}') está bloqueada. Use apenas comandos de API (move, till, plant, etc.) na linha principal. Compre o upgrade 'CODE_FUNCTIONS'.`
               );
             }
           }
