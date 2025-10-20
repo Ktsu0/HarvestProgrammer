@@ -127,17 +127,18 @@ body {
 /* Drone Visuals */
 #drone-el {
   position: absolute;
-  background-color: transparent;
-  border: none;
-  transition: transform 0.25s ease-in-out;
+  transition: grid-area 0.25s ease-in-out, transform 0.25s ease-in-out;
   z-index: 10;
+  top: 10%;
+  left: 20%;
+  pointer-events: none;
+  justify-self: center;
+  align-self: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: none;
-  top: 10%;
-  left: 10%;
 }
+
 #drone-el::after {
   content: "🚁";
   color: #fcd34d; /* Yellow/Gold for visibility */
