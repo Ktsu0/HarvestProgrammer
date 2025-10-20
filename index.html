@@ -252,8 +252,8 @@ Compre upgrades na Árvore Tecnológica para usá-los.
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const TILE_UPDATE_SPEED = 300; // ms
-        const AUTO_RUN_DELAY = 2000; // 2 seconds delay for auto-run
+        const TILE_UPDATE_SPEED = 300;
+        const AUTO_RUN_DELAY = 2000;
 
         // DOM Elements
         const farmGridEl = document.getElementById("farm-grid");
@@ -359,7 +359,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
             inventoryCapacity: 10,
           },
           farmResources: {
-            WATER: 0, // NEW
+            WATER: 0,
             WHEAT: 0,
             CARROT: 0,
             BELL_PEPPER: 0,
@@ -371,8 +371,8 @@ Compre upgrades na Árvore Tecnológica para usá-los.
             CORN_SEED: 0,
             TOMATO_SEED: 0,
           },
-          waterCapacity: 5, // NEW
-          rainChance: 0, // NEW: Base chance is handled in game loop
+          waterCapacity: 5,
+          rainChance: 5,
           unlockedCrops: ["WHEAT"],
           dropChances: {
             CARROT_SEED: 0,
@@ -395,9 +395,9 @@ Compre upgrades na Árvore Tecnológica para usá-los.
             autoRun: false,
           },
           upgrades: {},
-          isRunning: false, // Code execution is currently happening
-          isAutoRunning: false, // Code is running in a loop
-          lastRainCheck: 0, // For rain mechanics
+          isRunning: false,
+          isAutoRunning: false,
+          lastRainCheck: 0,
         };
 
         const cropInfo = {
@@ -443,7 +443,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
           capacity: "Capacidade do Drone",
           harvest: "Multiplicadores de Colheita",
           seeds: "Sementes",
-          water: "Recipiente de Água", // NEW CATEGORY
+          water: "Recipiente de Água",
           code: "Funcionalidades de Código",
           inventory: "Inventário (Gerenciar Itens)",
         };
@@ -558,7 +558,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
           INV_L3: {
             category: "capacity",
             unlocked: false,
-            cost: { WHEAT: 30, CARROT: 10 },
+            cost: { WHEAT: 15, CARROT: 5 },
             name: "Módulo de Carga II (+30)",
             effect: () => {
               gameState.drone.inventoryCapacity += 30;
@@ -568,17 +568,17 @@ Compre upgrades na Árvore Tecnológica para usá-los.
           INV_L4: {
             category: "capacity",
             unlocked: false,
-            cost: { CARROT: 50, BELL_PEPPER: 20 },
+            cost: { CARROT: 30, BELL_PEPPER: 20 },
             name: "Módulo de Carga III (+60)",
             effect: () => {
-              gameState.drone.inventoryCapacity += 60;
+              gameState.drone.inventoryCapacity += 50;
             },
             description: "Aumenta a capacidade de carga em +60.",
           },
           INV_L5: {
             category: "capacity",
             unlocked: false,
-            cost: { BELL_PEPPER: 100, CORN: 50 },
+            cost: { BELL_PEPPER: 70, CORN: 30 },
             name: "Módulo de Carga IV (+100)",
             effect: () => {
               gameState.drone.inventoryCapacity += 100;
@@ -588,7 +588,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
           INV_L6: {
             category: "capacity",
             unlocked: false,
-            cost: { CORN: 200, TOMATO: 80 },
+            cost: { CORN: 150, TOMATO: 50 },
             name: "Módulo de Carga V (+200)",
             effect: () => {
               gameState.drone.inventoryCapacity += 200;
@@ -638,10 +638,10 @@ Compre upgrades na Árvore Tecnológica para usá-los.
             effect: () => {
               gameState.unlockedCrops.push("CARROT");
               gameState.farmResources["CARROT_SEED"] += 5;
-              gameState.dropChances["CARROT_SEED"] = 5;
+              gameState.dropChances["CARROT_SEED"] = 10;
             },
             description:
-              "Desbloqueia a Cenoura e dá 5 Sementes. (Chance de drop de 5% de Trigo para Cenoura).",
+              "Desbloqueia a Cenoura e dá 5 Sementes. (Chance de drop de 10% de Trigo para Cenoura).",
           },
           SEED_CARROT_CHANCE: {
             category: "seeds",
@@ -663,10 +663,10 @@ Compre upgrades na Árvore Tecnológica para usá-los.
             effect: () => {
               gameState.unlockedCrops.push("BELL_PEPPER");
               gameState.farmResources["BELL_PEPPER_SEED"] += 5;
-              gameState.dropChances["BELL_PEPPER_SEED"] = 5;
+              gameState.dropChances["BELL_PEPPER_SEED"] = 10;
             },
             description:
-              "Desbloqueia o Pimentão e dá 5 Sementes. (Chance de drop de 5% de Cenoura para Pimentão).",
+              "Desbloqueia o Pimentão e dá 5 Sementes. (Chance de drop de 10% de Cenoura para Pimentão).",
           },
           SEED_BELL_PEPPER_CHANCE: {
             category: "seeds",
@@ -688,7 +688,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
             effect: () => {
               gameState.unlockedCrops.push("CORN");
               gameState.farmResources["CORN_SEED"] += 5;
-              gameState.dropChances["CORN_SEED"] = 5;
+              gameState.dropChances["CORN_SEED"] = 10;
             },
             description: "Desbloqueia o Milho e dá 5 Sementes.",
           },
@@ -701,7 +701,7 @@ Compre upgrades na Árvore Tecnológica para usá-los.
             effect: () => {
               gameState.unlockedCrops.push("TOMATO");
               gameState.farmResources["TOMATO_SEED"] += 5;
-              gameState.dropChances["TOMATO_SEED"] = 5;
+              gameState.dropChances["TOMATO_SEED"] = 10;
             },
             description: "Desbloqueia o Tomate e dá 5 Sementes.",
           },
@@ -734,9 +734,9 @@ Compre upgrades na Árvore Tecnológica para usá-los.
             cost: { BELL_PEPPER: 80, CORN: 20 },
             name: "Aumento de Chuva I (Base)",
             effect: () => {
-              gameState.rainChance = 3;
+              gameState.rainChance = 5;
             },
-            description: "Adiciona 3% de chance de chover por ciclo de jogo.",
+            description: "Adiciona 5% de chance de chover por ciclo de jogo.",
           },
           WATER_RAIN_II: {
             category: "water",
@@ -744,10 +744,10 @@ Compre upgrades na Árvore Tecnológica para usá-los.
             cost: { CORN: 150, TOMATO: 50 },
             name: "Aumento de Chuva II (Avançado)",
             effect: () => {
-              gameState.rainChance = 6;
+              gameState.rainChance = 5;
             },
             description:
-              "Aumenta a chance de chover para 6% por ciclo de jogo.",
+              "Aumenta a chance de chover para 5% por ciclo de jogo.",
           },
 
           // CODE UPGRADES
