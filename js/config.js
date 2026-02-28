@@ -20,7 +20,7 @@ export const cropInfo = {
     seedEmoji: "🌱",
     growthTime: 1000,
     drops: "CARROT_SEED",
-    name: "Trigo"
+    name: "Trigo",
   },
   CARROT: {
     seed: "CARROT_SEED",
@@ -28,15 +28,16 @@ export const cropInfo = {
     seedEmoji: "🌰",
     growthTime: 2000,
     drops: "POTATO_SEED", // Changed chain
-    name: "Cenoura"
+    name: "Cenoura",
   },
-  POTATO: { // NEW
+  POTATO: {
+    // NEW
     seed: "POTATO_SEED",
     emoji: "🥔",
     seedEmoji: "🟤",
     growthTime: 4000,
     drops: "BELL_PEPPER_SEED",
-    name: "Batata"
+    name: "Batata",
   },
   BELL_PEPPER: {
     seed: "BELL_PEPPER_SEED",
@@ -44,7 +45,7 @@ export const cropInfo = {
     seedEmoji: "🌿",
     growthTime: 5000,
     drops: "CORN_SEED",
-    name: "Pimentão"
+    name: "Pimentão",
   },
   CORN: {
     seed: "CORN_SEED",
@@ -52,15 +53,16 @@ export const cropInfo = {
     seedEmoji: "🟡",
     growthTime: 8000,
     drops: "TURNIP_SEED",
-    name: "Milho"
+    name: "Milho",
   },
-  TURNIP: { // NEW
+  TURNIP: {
+    // NEW
     seed: "TURNIP_SEED",
     emoji: "🧅",
     seedEmoji: "⚪",
     growthTime: 6000,
     drops: "TOMATO_SEED",
-    name: "Nabo"
+    name: "Nabo",
   },
   TOMATO: {
     seed: "TOMATO_SEED",
@@ -68,32 +70,35 @@ export const cropInfo = {
     seedEmoji: "🔴",
     growthTime: 12000,
     drops: "PUMPKIN_SEED",
-    name: "Tomate"
+    name: "Tomate",
   },
-  PUMPKIN: { // NEW
+  PUMPKIN: {
+    // NEW
     seed: "PUMPKIN_SEED",
     emoji: "🎃",
     seedEmoji: "🔸",
     growthTime: 20000,
     drops: "WATERMELON_SEED",
-    name: "Abóbora"
+    name: "Abóbora",
   },
-  WATERMELON: { // NEW
+  WATERMELON: {
+    // NEW
     seed: "WATERMELON_SEED",
     emoji: "🍉",
     seedEmoji: "⚫",
     growthTime: 30000,
     drops: "STRAWBERRY_SEED",
-    name: "Melancia"
+    name: "Melancia",
   },
-  STRAWBERRY: { // NEW (Endgame)
+  STRAWBERRY: {
+    // NEW (Endgame)
     seed: "STRAWBERRY_SEED",
     emoji: "🍓",
     seedEmoji: "∴",
     growthTime: 45000,
     drops: null,
-    name: "Morango"
-  }
+    name: "Morango",
+  },
 };
 
 export const dropMap = {
@@ -111,10 +116,8 @@ export const dropMap = {
 export const apiFunctionsData = {
   move: {
     signature: "move('N'|'S'|'E'|'W')",
-    description:
-      "Move o drone uma casa na direção especificada.",
-    details:
-      "Uso de energia: 0. Assíncrona. O mundo é esférico (Toro).",
+    description: "Move o drone uma casa na direção especificada.",
+    details: "Uso de energia: 0. Assíncrona. O mundo é esférico (Toro).",
   },
   till: {
     signature: "till()",
@@ -124,7 +127,8 @@ export const apiFunctionsData = {
   plant: {
     signature: "plant('CULTURA')",
     description: "Planta uma semente.",
-    details: "Requer sementes e terra TILLED. Assíncrona.",
+    details:
+      "Requer sementes e terra TILLED. Assíncrona.<br><br><span class=\"text-white font-semibold\">Culturas disponíveis:</span> 'WHEAT', 'CARROT', 'POTATO', 'BELL_PEPPER', 'CORN', 'TURNIP', 'TOMATO', 'PUMPKIN', 'WATERMELON', 'STRAWBERRY'.",
   },
   harvest: {
     signature: "harvest()",
